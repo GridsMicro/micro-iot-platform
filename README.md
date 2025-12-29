@@ -31,8 +31,10 @@ We empower farmers and makers to use affordable local hardware (Shopee/Lazada) w
    npm run dev
    ```
 
-## 📖 Documentation
-Visit `/docs` in the application for the detailed strategy, architecture, and roadmap.
+## 📖 Documentation & Ecosystem
+- **Official Documentation**: [smartfarm-docs](https://github.com/microtronic-thailand/smartfarm-docs)
+- **Arduino Library**: [smartfarm-iot-library](https://github.com/microtronic-thailand/smartfarm-iot-library)
+- **Mobile App**: [smartfarm-mobile](https://github.com/microtronic-thailand/smartfarm-mobile)
 
 ## 🎨 Design System
 We use a **Glassmorphism** aesthetic to convey a modern, clean, and organic feel, suitable for next-gen agriculture technology.

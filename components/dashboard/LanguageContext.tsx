@@ -19,6 +19,7 @@ const translations: Translations = {
     marketplace: { th: 'ตลาดซื้อขาย', en: 'Marketplace' },
     myDevices: { th: 'อุปกรณ์ของฉัน', en: 'My Devices' },
     settings: { th: 'ตั้งค่า', en: 'Settings' },
+    smartHealth: { th: 'สุขภาพอัจฉริยะ', en: 'Smart Health' },
 
     // Dashboard
     healthMonitor: { th: 'ติดตามสุขภาพพืช', en: 'Health Monitor' },
