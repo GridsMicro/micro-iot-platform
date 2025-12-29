@@ -1,0 +1,412 @@
+---
+title: 'Off-Grid Power Solutions for Smart Farm'
+date: '2025-01-02'
+---
+
+# Off-Grid Power Solutions for Smart Farm IoT Devices
+
+## Why Renewable Energy for Smart Farm?
+
+เกษตรกรส่วนใหญ่มีพื้นที่ฟาร์มห่างจากแหล่งไฟฟ้า การใช้พลังงานทดแทนจึงเป็นทางเลือกที่ดีที่สุด:
+
+✅ **ประหยัดค่าไฟ** - ไม่ต้องจ่ายค่าไฟรายเดือน  
+✅ **ติดตั้งได้ทุกที่** - ไม่ต้องรอการไฟฟ้าเข้าพื้นที่  
+✅ **เป็นมิตรกับสิ่งแวดล้อม** - ลดการปล่อย CO₂  
+✅ **ทำงานได้ 24/7** - ใช้แบตเตอรี่สำรอง  
+
+---
+
+## Power Consumption of IoT Devices
+
+### Typical Smart Farm Node:
+- **ESP32**: 80-160 mA (Active), 5-10 mA (Deep Sleep)
+- **STM32**: 30-50 mA (Active), 1-2 mA (Sleep)
+- **DHT22 Sensor**: 1-1.5 mA
+- **Relay Module**: 50-70 mA (when ON)
+- **Total Average**: ~100-200 mA @ 5V = 0.5-1W
+
+### Daily Energy Consumption:
+```
+Scenario 1: Always Active
+100 mA × 24 hours = 2.4 Ah/day × 5V = 12 Wh/day
+
+Scenario 2: Deep Sleep (Wake every 5 min)
+Average 20 mA × 24 hours = 0.48 Ah/day × 5V = 2.4 Wh/day
+```
+
+**Recommendation**: Use Deep Sleep mode to save 80% energy!
+
+---
+
+## Solution 1: Solar Power System
+
+### 🌞 Small Solar Setup (Single Node)
+
+**Components:**
+1. **Solar Panel**: 10W (6V) - ~฿200-300
+2. **Charge Controller**: TP4056 or CN3791 - ~฿30-50
+3. **Battery**: 18650 Li-ion 3.7V 3000mAh (2-3 cells) - ~฿100-150
+4. **DC-DC Converter**: LM2596 (Step-down to 5V) - ~฿30
+5. **Wires & Connectors** - ~฿50
+
+**Total Cost**: ~฿400-600 (~$12-18 USD)
+
+### Wiring Diagram:
+
+```
+Solar Panel (6V 10W)
+    |
+    v
+[Charge Controller] ---> Battery (3.7V 6000mAh)
+    |                        |
+    +------------------------+
+                |
+                v
+        [DC-DC Converter 5V]
+                |
+                v
+            ESP32/STM32
+```
+
+### Recommended Products (Shopee/Lazada):
+
+**Solar Panel:**
+- 10W 6V Polycrystalline (~฿250)
+- 20W 12V Monocrystalline (~฿400) - Better efficiency
+
+**Charge Controller:**
+- TP4056 Module with Protection (~฿30)
+- CN3791 MPPT Solar Charger (~฿80) - Better for solar
+
+**Battery:**
+- 18650 3.7V 3000mAh (~฿50/cell)
+- Use 2 cells in parallel = 6000mAh
+- Or 3 cells = 9000mAh for longer runtime
+
+### Calculation Example:
+
+**Solar Panel**: 10W @ 6V = 1.67A (peak)  
+**Daily Generation** (5 hours good sunlight):  
+10W × 5h = 50 Wh/day
+
+**Battery Capacity**:  
+6000mAh @ 3.7V = 22.2 Wh
+
+**Runtime without sun**:  
+22.2 Wh ÷ 2.4 Wh/day = **9 days** (with deep sleep!)
+
+---
+
+## Solution 2: Wind Power System
+
+### 💨 Small Wind Turbine Setup
+
+**Components:**
+1. **Mini Wind Turbine**: 100W 12V - ~฿1,500-2,500
+2. **Charge Controller**: PWM 12V 10A - ~฿200-300
+3. **Battery**: 12V 7Ah Lead-Acid or LiFePO4 - ~฿400-800
+4. **DC-DC Converter**: Buck converter 12V to 5V - ~฿50
+
+**Total Cost**: ~฿2,200-3,700 (~$65-110 USD)
+
+### When to Use Wind Power?
+
+✅ **Open areas** with consistent wind (>3 m/s average)  
+✅ **Coastal regions** or hilltops  
+✅ **Supplement to solar** during rainy season  
+⚠️ **Not recommended** for enclosed farms or low-wind areas  
+
+### Wiring Diagram:
+
+```
+Wind Turbine (12V 100W)
+    |
+    v
+[PWM Charge Controller] ---> Battery (12V 7Ah)
+    |                            |
+    +----------------------------+
+                |
+                v
+        [Buck Converter 5V]
+                |
+                v
+            ESP32/STM32
+```
+
+### Wind Turbine Selection:
+
+**100W Turbine** (~฿2,000):
+- Start-up wind speed: 2.5 m/s
+- Rated wind speed: 12 m/s
+- Suitable for: Small farms, 1-3 nodes
+
+**400W Turbine** (~฿5,000):
+- More power for multiple nodes
+- Requires stronger mounting
+
+---
+
+## Solution 3: Hybrid Solar + Wind
+
+### 🌞💨 Best of Both Worlds
+
+**Why Hybrid?**
+- Solar works during day
+- Wind works during night/rainy season
+- Maximum uptime (99%+)
+
+**Components:**
+1. Solar Panel: 20W 12V - ~฿400
+2. Wind Turbine: 100W 12V - ~฿2,000
+3. Hybrid Charge Controller: 12V 20A - ~฿500
+4. Battery: 12V 12Ah LiFePO4 - ~฿1,200
+5. DC-DC Converter: 12V to 5V - ~฿50
+
+**Total Cost**: ~฿4,200 (~$125 USD)
+
+### Wiring Diagram:
+
+```
+Solar Panel (20W)    Wind Turbine (100W)
+        |                    |
+        +--------------------+
+                |
+                v
+    [Hybrid Charge Controller]
+                |
+                v
+        Battery (12V 12Ah)
+                |
+                v
+        [Buck Converter 5V]
+                |
+                v
+            ESP32/STM32
+```
+
+---
+
+## Battery Selection Guide
+
+### 1. **18650 Li-ion** (Best for small systems)
+- **Voltage**: 3.7V
+- **Capacity**: 2000-3500 mAh
+- **Pros**: Cheap, high energy density
+- **Cons**: Needs protection circuit
+- **Price**: ~฿50-80/cell
+
+### 2. **Lead-Acid** (Budget option)
+- **Voltage**: 12V
+- **Capacity**: 7-20 Ah
+- **Pros**: Very cheap, robust
+- **Cons**: Heavy, lower lifespan
+- **Price**: ~฿400-800
+
+### 3. **LiFePO4** (Best for long-term)
+- **Voltage**: 12.8V
+- **Capacity**: 7-20 Ah
+- **Pros**: Long life (2000+ cycles), safe
+- **Cons**: More expensive
+- **Price**: ~฿1,200-2,500
+
+**Recommendation**: 
+- **Small farm (1-2 nodes)**: 18650 Li-ion
+- **Medium farm (3-5 nodes)**: 12V 12Ah LiFePO4
+- **Large farm (10+ nodes)**: 12V 20Ah LiFePO4
+
+---
+
+## Power Management Tips
+
+### 1. **Use Deep Sleep Mode**
+
+**ESP32 Example:**
+```cpp
+#include <esp_sleep.h>
+
+void setup() {
+  // Read sensors
+  // Send data via MQTT
+  
+  // Sleep for 5 minutes
+  esp_sleep_enable_timer_wakeup(5 * 60 * 1000000); // microseconds
+  esp_deep_sleep_start();
+}
+```
+
+**Power Savings**: 80 mA → 5 mA = **94% reduction!**
+
+### 2. **Optimize Sensor Reading**
+
+- Don't read sensors every second
+- Read every 5-10 minutes for temperature/humidity
+- Use interrupts for critical sensors
+
+### 3. **Turn Off Unused Peripherals**
+
+```cpp
+// Disable WiFi when not needed
+WiFi.disconnect(true);
+WiFi.mode(WIFI_OFF);
+
+// Disable Bluetooth
+btStop();
+```
+
+---
+
+## Monitoring Power System
+
+### Add Voltage Monitoring to Your IoT Node
+
+**Components:**
+- Voltage Divider (2× Resistors)
+- ADC Pin on ESP32/STM32
+
+**Circuit:**
+```
+Battery (+) ---[10kΩ]---+---[10kΩ]--- GND
+                        |
+                     ADC Pin
+```
+
+**Code (ESP32):**
+```cpp
+float readBatteryVoltage() {
+  int raw = analogRead(34); // ADC pin
+  float voltage = (raw / 4095.0) * 3.3 * 2; // Voltage divider ratio
+  return voltage;
+}
+
+void loop() {
+  float batteryVoltage = readBatteryVoltage();
+  
+  if (batteryVoltage < 3.3) {
+    Serial.println("WARNING: Low battery!");
+    // Send alert via MQTT
+  }
+  
+  // Send battery status to dashboard
+  sendMQTT("battery_voltage", batteryVoltage);
+}
+```
+
+---
+
+## Installation Tips
+
+### Solar Panel Placement:
+1. **Face South** (in Northern Hemisphere) or **Face North** (in Southern Hemisphere)
+2. **Tilt angle** = Your latitude (e.g., Bangkok ~13°)
+3. **No shadows** from 10 AM - 2 PM
+4. **Clean regularly** (dust reduces efficiency by 20-30%)
+
+### Wind Turbine Placement:
+1. **Height**: At least 5-10 meters above ground
+2. **Clear area**: No obstacles within 20 meters
+3. **Secure mounting**: Use strong pole, guy wires
+4. **Check local regulations**: Some areas require permits
+
+### Weatherproofing:
+- Use **IP65 waterproof boxes** for electronics (~฿100-200)
+- Seal all cable entries with **silicone sealant**
+- Use **UV-resistant cables** for outdoor wiring
+- Add **lightning protection** if in open area
+
+---
+
+## Cost Comparison
+
+| Solution | Initial Cost | Monthly Cost | Uptime | Best For |
+|----------|-------------|--------------|--------|----------|
+| **Grid Power** | ฿500-1,000 | ฿100-300 | 95% | Near power lines |
+| **Solar Only** | ฿400-600 | ฿0 | 85-90% | Sunny areas |
+| **Wind Only** | ฿2,200-3,700 | ฿0 | 70-80% | Windy areas |
+| **Hybrid** | ฿4,200+ | ฿0 | 95-99% | Remote farms |
+
+---
+
+## Real-World Example: Smart Farm Node
+
+### Setup:
+- **Location**: Chiang Mai (Northern Thailand)
+- **Power**: 20W Solar + 12V 12Ah LiFePO4
+- **Devices**: 1× ESP32, 3× Sensors, 1× Relay
+- **Power consumption**: 2.5 Wh/day (with deep sleep)
+
+### Results:
+- **Uptime**: 99.2% (365 days)
+- **Downtime**: Only 3 days during heavy rain
+- **ROI**: Paid off in 6 months (vs grid power)
+
+---
+
+## Troubleshooting
+
+### Problem: Battery drains quickly
+**Solutions:**
+1. Check for current leaks (use multimeter)
+2. Enable deep sleep mode
+3. Reduce sensor reading frequency
+4. Check if solar panel is getting enough sun
+
+### Problem: Solar panel not charging
+**Solutions:**
+1. Check panel voltage with multimeter (should be 6-7V in sun)
+2. Clean panel surface
+3. Check charge controller connections
+4. Verify battery is not already full
+
+### Problem: Wind turbine not spinning
+**Solutions:**
+1. Check if wind speed is above start-up threshold (2.5 m/s)
+2. Lubricate bearings
+3. Check for obstructions
+4. Verify turbine is facing the wind
+
+---
+
+## Advanced: Solar Tracking System
+
+For 30-40% more efficiency, add a simple solar tracker:
+
+**Components:**
+- 2× LDR (Light Dependent Resistors)
+- 1× Servo motor
+- Arduino/ESP32 for control
+
+**How it works:**
+- Compare light intensity from 2 LDRs
+- Rotate panel to face brighter side
+- Update position every 15 minutes
+
+**Cost**: +฿300-500  
+**Benefit**: 30-40% more power generation
+
+---
+
+## Recommended Suppliers (Thailand)
+
+### Online:
+- **Shopee**: Search "solar panel 10w" or "wind turbine 100w"
+- **Lazada**: Good for batteries and charge controllers
+- **AliExpress**: Cheapest, but 2-4 weeks shipping
+
+### Physical Stores (Bangkok):
+- **Baan & Beyond**: Solar panels, batteries
+- **HomePro**: Basic solar kits
+- **Siam Square**: Electronics components
+
+---
+
+## Need Help?
+
+If you have questions about power systems for your Smart Farm, contact us!
+
+<LineContactButton lineOaId="@smartfarm" message="สวัสดีครับ ต้องการสอบถามเกี่ยวกับระบบพลังงานสำหรับ Smart Farm" />
+
+---
+
+**Last Updated**: 2025-12-29  
+**Difficulty**: Intermediate  
+**Estimated Cost**: ฿400-4,200 depending on solution

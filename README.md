@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Smart Farm IoT Platform (2025 Edition)
 
-## Getting Started
+## 🚀 Vision
+A **"Systems Open, Platform Closed"** approach to Smart Farming. 
+We empower farmers and makers to use affordable local hardware (Shopee/Lazada) while providing a premium, stable, and beautiful software platform to manage it all.
 
-First, run the development server:
+## 🌟 Key Features
+- **Modern Tech Stack**: Next.js 15 (App Router), TailwindCSS v4 with Glassmorphism.
+- **Robust Backend**: EMQX MQTT Broker + TimescaleDB.
+- **No-Code Automation**: Visual logic builder for farm control.
+- **Hybrid Operation**: Works offline (Edge) and syncs to Cloud.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🛠️ Getting Started
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Prerequisites
+- Node.js 18+
+- npm or pnpm
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Installation
+1. Clone the repo:
+   ```bash
+   git clone https://github.com/GridsMicro/micro-iot-platform.git
+   cd micro-iot-platform
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📖 Documentation
+Visit `/docs` in the application for the detailed strategy, architecture, and roadmap.
 
-## Learn More
+## 🎨 Design System
+We use a **Glassmorphism** aesthetic to convey a modern, clean, and organic feel, suitable for next-gen agriculture technology.
 
-To learn more about Next.js, take a look at the following resources:
+## 🤝 Contribution
+We welcome contributions!
+- **Library (SmartFarmIoT)**: Open Source (MIT License). Feel free to submit PRs for new sensor drivers.
+- **Platform (Dashboard & Backend)**: Closed Source (Commercial). API documentation available for partners.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📄 License
+- **Embedded Library**: Licensed under the [MIT License](LICENSE).
+- **Web Platform**: Proprietary software. @ 2025 Smart Farm Platform. All rights reserved.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+*Built with ❤️ for the Future of Farming.*

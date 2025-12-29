@@ -1,26 +1,190 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Default: Smart Farm Nature */
+  --bg-primary: #022c22;
+  --bg-secondary: #050b0a;
+  --accent-primary: #10b981;
+  --accent-secondary: #0d9488;
+  --foreground: #d1fae5;
+  --glass-bg: rgba(10, 10, 10, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glow-color: rgba(16, 185, 129, 0.5);
+}
+
+[data-theme='cyberpunk'] {
+  --bg-primary: #0f172a;
+  --bg-secondary: #020617;
+  --accent-primary: #f472b6;
+  --accent-secondary: #8b5cf6;
+  --foreground: #f0f9ff;
+  --glass-bg: rgba(15, 23, 42, 0.8);
+  --glass-border: rgba(244, 114, 182, 0.2);
+  --glow-color: rgba(244, 114, 182, 0.4);
+}
+
+[data-theme='minimal'] {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --accent-primary: #0f172a;
+  --accent-secondary: #64748b;
+  --foreground: #0f172a;
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --glow-color: rgba(0, 0, 0, 0.1);
+}
+
+--glow-color: rgba(59, 130, 246, 0.4);
+}
+
+[data-theme='midnight'] {
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --accent-primary: #ffffff;
+  --accent-secondary: #333333;
+  --foreground: #ffffff;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glow-color: rgba(255, 255, 255, 0.5);
 }
 
 @theme inline {
-  --color-background: var(--background);
+  --color-background: var(--bg-primary);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+body {
+  background: linear-gradient(135deg, var(--bg-primary), var(--bg-gradient-end));
+  background-attachment: fixed;
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+}
+
+/* Glass Utility Classes */
+.glass {
+  /* Fallback for browsers that don't support backdrop-filter */
+  background: rgba(255, 255, 255, 0.9);
+
+  /* Modern browsers */
+  @supports (backdrop-filter: blur(16px)) or (-webkit-backdrop-filter: blur(16px)) {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+  }
+
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+  0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+
+.glass-card {
+  /* Applying glass styles manually since @apply might fail if the class is defined in the same file with v4 */
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+  border-radius: 0.75rem;
+  /* rounded-xl */
+  padding: 1.5rem;
+  /* p-6 */
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+.glass-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  /* hover:shadow-lg */
+}
+
+/* Custom Animations */
+@keyframes blob {
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes gradient {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient 3s ease infinite;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s ease-out;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+.animation-delay-200 {
+  animation-delay: 0.2s;
+}
+
+.animation-delay-400 {
+  animation-delay: 0.4s;
 }

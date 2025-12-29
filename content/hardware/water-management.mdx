@@ -1,0 +1,524 @@
+---
+title: 'Smart Water Management for Sustainable Farming'
+date: '2025-01-03'
+---
+
+# Smart Water Management System
+
+## Why Water Management Matters
+
+น้ำคือทรัพยากรที่มีค่าที่สุดในการเกษตร การใช้น้ำอย่างชาญฉลาดไม่เพียงช่วยประหยัดต้นทุน แต่ยังช่วยรักษาระบบนิเวศ:
+
+✅ **ประหยัดน้ำ 30-50%** - ลดค่าน้ำและพลังงานสูบน้ำ  
+✅ **เพิ่มผลผลิต** - พืชได้รับน้ำพอดี ไม่มากไม่น้อย  
+✅ **ป้องกันโรคพืช** - ลดความชื้นส่วนเกิน  
+✅ **รักษาระบบนิเวศ** - ไม่สูบน้ำบาดาลเกินไป  
+
+---
+
+## Water Monitoring Sensors
+
+### 1. **Soil Moisture Sensor** (เซนเซอร์ความชื้นดิน)
+
+**Types:**
+
+#### A. Capacitive Soil Moisture Sensor (แนะนำ)
+- **Price**: ~฿50-80
+- **Pros**: ไม่เป็นสนิม, ทนทาน, แม่นยำ
+- **Cons**: แพงกว่าแบบ Resistive นิดหน่อย
+- **Lifespan**: 2-3 ปี
+
+**Wiring:**
+```
+Sensor → ESP32/STM32
+VCC    → 3.3V
+GND    → GND
+AOUT   → GPIO34 (Analog)
+```
+
+**Code Example (ESP32):**
+```cpp
+#define SOIL_PIN 34
+
+void setup() {
+  Serial.begin(115200);
+}
+
+void loop() {
+  int soilValue = analogRead(SOIL_PIN);
+  
+  // Convert to percentage (calibrate for your soil)
+  int soilMoisture = map(soilValue, 4095, 1500, 0, 100);
+  soilMoisture = constrain(soilMoisture, 0, 100);
+  
+  Serial.print("Soil Moisture: ");
+  Serial.print(soilMoisture);
+  Serial.println("%");
+  
+  // Auto-irrigation logic
+  if (soilMoisture < 30) {
+    Serial.println("🚨 Soil too dry! Turning ON pump...");
+    digitalWrite(RELAY_PIN, HIGH);
+  } else if (soilMoisture > 70) {
+    Serial.println("✅ Soil wet enough. Turning OFF pump.");
+    digitalWrite(RELAY_PIN, LOW);
+  }
+  
+  delay(5000);
+}
+```
+
+#### B. Resistive Soil Moisture Sensor (งบน้อย)
+- **Price**: ~฿20-30
+- **Pros**: ถูกมาก
+- **Cons**: เป็นสนิมง่าย (อายุ 3-6 เดือน)
+
+### 2. **Water Level Sensor** (เซนเซอร์ระดับน้ำ)
+
+**Types:**
+
+#### A. Ultrasonic Sensor (HC-SR04)
+- **Price**: ~฿30-50
+- **Range**: 2-400 cm
+- **Use**: วัดระดับน้ำในถัง/บ่อ
+
+**Code Example:**
+```cpp
+#define TRIG_PIN 5
+#define ECHO_PIN 18
+
+float getWaterLevel() {
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+  
+  long duration = pulseIn(ECHO_PIN, HIGH);
+  float distance = duration * 0.034 / 2; // cm
+  
+  // Tank height = 100cm, sensor at top
+  float waterLevel = 100 - distance;
+  return waterLevel;
+}
+
+void loop() {
+  float level = getWaterLevel();
+  Serial.print("Water Level: ");
+  Serial.print(level);
+  Serial.println(" cm");
+  
+  if (level < 20) {
+    Serial.println("⚠️ Low water! Refill tank.");
+    // Send alert via MQTT
+  }
+}
+```
+
+#### B. Float Switch (ลูกลอย)
+- **Price**: ~฿50-100
+- **Pros**: ง่ายที่สุด, ไม่ต้องเขียนโค้ด
+- **Use**: เปิด/ปิดปั๊มอัตโนมัติ
+
+### 3. **Water Flow Sensor** (เซนเซอร์การไหลของน้ำ)
+
+**Model**: YF-S201 (1/2")
+- **Price**: ~฿80-120
+- **Use**: วัดปริมาณน้ำที่ใช้ (ลิตร/นาที)
+
+**Code Example:**
+```cpp
+#define FLOW_PIN 2
+volatile int pulseCount = 0;
+float flowRate = 0.0;
+float totalLiters = 0.0;
+
+void IRAM_ATTR pulseCounter() {
+  pulseCount++;
+}
+
+void setup() {
+  pinMode(FLOW_PIN, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(FLOW_PIN), pulseCounter, FALLING);
+}
+
+void loop() {
+  delay(1000);
+  
+  // Calculate flow rate (L/min)
+  flowRate = (pulseCount / 7.5); // YF-S201: 7.5 pulses/L
+  totalLiters += (flowRate / 60); // Convert to liters
+  
+  Serial.print("Flow: ");
+  Serial.print(flowRate);
+  Serial.print(" L/min | Total: ");
+  Serial.print(totalLiters);
+  Serial.println(" L");
+  
+  pulseCount = 0;
+}
+```
+
+---
+
+## Smart Irrigation System
+
+### Basic Drip Irrigation Setup
+
+**Components:**
+1. **Water Pump**: 12V DC (~฿200-400)
+2. **Relay Module**: 5V (~฿30)
+3. **Drip Irrigation Kit**: (~฿300-500)
+4. **Soil Moisture Sensor**: (~฿50)
+5. **Water Tank**: 100-200L (~฿500-1,000)
+
+**Total**: ~฿1,100-2,000
+
+### Wiring Diagram:
+
+```
+ESP32 → Relay → Water Pump → Drip Lines
+  ↑
+Soil Moisture Sensor
+```
+
+### Complete Auto-Irrigation Code:
+
+```cpp
+#include <WiFi.h>
+#include <PubSubClient.h>
+
+#define SOIL_PIN 34
+#define RELAY_PIN 5
+#define FLOW_PIN 2
+
+// Thresholds
+const int DRY_THRESHOLD = 30;   // Turn ON pump
+const int WET_THRESHOLD = 70;   // Turn OFF pump
+
+WiFiClient espClient;
+PubSubClient mqtt(espClient);
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(RELAY_PIN, OUTPUT);
+  digitalWrite(RELAY_PIN, LOW); // Pump OFF
+  
+  // Connect to WiFi & MQTT
+  connectWiFi();
+  mqtt.setServer("192.168.1.100", 1883);
+}
+
+void loop() {
+  int moisture = readSoilMoisture();
+  
+  // Send data to platform
+  sendMQTT("soil_moisture", moisture);
+  
+  // Auto-irrigation logic
+  if (moisture < DRY_THRESHOLD) {
+    turnOnPump();
+  } else if (moisture > WET_THRESHOLD) {
+    turnOffPump();
+  }
+  
+  delay(60000); // Check every 1 minute
+}
+
+int readSoilMoisture() {
+  int raw = analogRead(SOIL_PIN);
+  return map(raw, 4095, 1500, 0, 100);
+}
+
+void turnOnPump() {
+  digitalWrite(RELAY_PIN, HIGH);
+  Serial.println("💧 Pump ON");
+  sendMQTT("pump_status", "ON");
+}
+
+void turnOffPump() {
+  digitalWrite(RELAY_PIN, LOW);
+  Serial.println("🛑 Pump OFF");
+  sendMQTT("pump_status", "OFF");
+}
+```
+
+---
+
+## Water Conservation Techniques
+
+### 1. **Rainwater Harvesting** (เก็บน้ำฝน)
+
+**Setup:**
+- Roof area: 100 m²
+- Annual rainfall (Bangkok): ~1,500 mm
+- **Potential**: 100 × 1.5 = **150,000 liters/year!**
+
+**Components:**
+- Gutter system (~฿2,000-5,000)
+- Storage tank 1,000-2,000L (~฿3,000-8,000)
+- First flush diverter (~฿500)
+- Filter (~฿300)
+
+**ROI**: ประหยัดค่าน้ำ ~฿3,000-5,000/ปี
+
+### 2. **Drip Irrigation** (ระบบน้ำหยด)
+
+**Benefits:**
+- ประหยัดน้ำ 30-50% vs สปริงเกลอร์
+- ลดการระเหยของน้ำ
+- ป้องกันโรคใบ (ใบไม่เปียก)
+
+**Cost**: ~฿300-500 สำหรับพื้นที่ 10-20 ตร.ม.
+
+### 3. **Mulching** (คลุมดิน)
+
+**Materials:**
+- ฟางข้าว (ฟรี!)
+- เศษไม้ (~฿50-100/ถุง)
+- พลาสติกคลุมดิน (~฿200-400/ม้วน)
+
+**Benefits:**
+- รักษาความชื้นดิน
+- ลดการระเหยน้ำ 50-70%
+- ป้องกันวัชพืช
+
+---
+
+## Water Quality Monitoring
+
+### pH Sensor (วัดความเป็นกรด-ด่าง)
+
+**Model**: Analog pH Sensor
+- **Price**: ~฿400-600
+- **Range**: pH 0-14
+- **Use**: ตรวจสอบคุณภาพน้ำ
+
+**Ideal pH for crops:**
+- ผักทั่วไป: 6.0-7.0
+- มะเขือเทศ: 6.0-6.8
+- ข้าว: 5.5-6.5
+
+### TDS Sensor (วัดแร่ธาตุในน้ำ)
+
+**Model**: TDS Meter
+- **Price**: ~฿200-400
+- **Use**: วัดความเข้มข้นของปุ๋ย
+
+**Code Example:**
+```cpp
+#define TDS_PIN 35
+
+float readTDS() {
+  int raw = analogRead(TDS_PIN);
+  float voltage = raw * (3.3 / 4095.0);
+  float tds = (133.42 * voltage * voltage * voltage 
+             - 255.86 * voltage * voltage 
+             + 857.39 * voltage) * 0.5;
+  return tds;
+}
+
+void loop() {
+  float tds = readTDS();
+  Serial.print("TDS: ");
+  Serial.print(tds);
+  Serial.println(" ppm");
+  
+  if (tds < 300) {
+    Serial.println("⚠️ Low nutrients. Add fertilizer.");
+  } else if (tds > 1500) {
+    Serial.println("⚠️ Too concentrated! Dilute.");
+  }
+}
+```
+
+---
+
+## Ecosystem-Friendly Practices
+
+### 1. **Biofilter for Wastewater** (กรองน้ำเสียด้วยพืช)
+
+**Plants for biofilter:**
+- ผักตบชวา (Water Hyacinth) - ดูดซับโลหะหนัก
+- ต้นกก (Cattail) - กรองตะกอน
+- ผักบุ้งน้ำ - ดูดซับไนโตรเจน
+
+**Setup:**
+1. สร้างบ่อกรอง 3 ชั้น
+2. น้ำเสียไหลผ่านพืชกรอง
+3. น้ำสะอาดกลับมาใช้ได้
+
+### 2. **Aquaponics Integration** (ปลูกพืชเลี้ยงปลา)
+
+**Concept:**
+```
+ปลา → ของเสีย (แอมโมเนีย) → แบคทีเรีย → ไนเตรต → พืช → กรองน้ำ → กลับไปหาปลา
+```
+
+**Benefits:**
+- ประหยัดน้ำ 90% vs ปลูกในดิน
+- ไม่ต้องใช้ปุ๋ยเคมี
+- ได้ทั้งผักและปลา
+
+**Sensors needed:**
+- pH sensor
+- Temperature sensor
+- Dissolved Oxygen sensor (~฿800-1,200)
+
+### 3. **Companion Planting** (ปลูกพืชเพื่อน)
+
+**Examples:**
+- **มะเขือเทศ + โหระพา** - ไล่แมลง
+- **ข้าวโพด + ถั่ว** - ถั่วเพิ่มไนโตรเจนให้ดิน
+- **แตงกวา + ดอกดาวเรือง** - ดึงดูดแมลงผสมเกสร
+
+---
+
+## Water Usage Analytics
+
+### Dashboard Metrics:
+
+**Daily Water Consumption:**
+```javascript
+// In your Next.js dashboard
+const WaterUsageChart = () => {
+  const data = {
+    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    datasets: [{
+      label: 'Water Used (Liters)',
+      data: [45, 52, 38, 65, 48, 42, 50],
+      backgroundColor: 'rgba(16, 185, 129, 0.5)',
+    }]
+  };
+  
+  return <Line data={data} />;
+};
+```
+
+**Efficiency Metrics:**
+- **Water per plant**: ลิตร/ต้น/วัน
+- **Water per yield**: ลิตร/กก.
+- **Irrigation efficiency**: % (น้ำที่พืชได้รับจริง)
+
+---
+
+## Advanced: Predictive Irrigation
+
+### Using Weather API
+
+```javascript
+// Fetch weather forecast
+const getWeatherForecast = async () => {
+  const response = await fetch(
+    `https://api.openweathermap.org/data/2.5/forecast?lat=13.75&lon=100.50&appid=YOUR_KEY`
+  );
+  const data = await response.json();
+  
+  // Check if rain expected in next 24h
+  const rainExpected = data.list.some(item => 
+    item.weather[0].main === 'Rain'
+  );
+  
+  if (rainExpected) {
+    console.log("🌧️ Rain expected. Skip irrigation.");
+    return false; // Don't irrigate
+  }
+  
+  return true; // OK to irrigate
+};
+```
+
+### Smart Scheduling
+
+```cpp
+// In ESP32
+struct IrrigationSchedule {
+  int hour;
+  int duration; // minutes
+};
+
+IrrigationSchedule schedule[] = {
+  {6, 15},   // 6:00 AM, 15 min
+  {18, 10}   // 6:00 PM, 10 min
+};
+
+void checkSchedule() {
+  int currentHour = timeClient.getHours();
+  
+  for (auto &sched : schedule) {
+    if (currentHour == sched.hour) {
+      irrigate(sched.duration);
+    }
+  }
+}
+```
+
+---
+
+## Cost-Benefit Analysis
+
+### Traditional Irrigation:
+- **Water usage**: 100 L/day
+- **Cost**: ฿3/day × 365 = **฿1,095/year**
+- **Labor**: 30 min/day
+
+### Smart Irrigation:
+- **Initial cost**: ฿1,500 (one-time)
+- **Water usage**: 50 L/day (50% savings!)
+- **Cost**: ฿1.5/day × 365 = **฿548/year**
+- **Labor**: 0 min/day (automated)
+
+**Savings**: ฿547/year + Time saved  
+**ROI**: 2.7 years
+
+---
+
+## Troubleshooting
+
+### Problem: Pump runs but no water
+**Solutions:**
+1. Check water level in tank
+2. Check for air locks in pipes
+3. Verify pump voltage (should be 12V)
+4. Clean pump filter
+
+### Problem: Soil sensor always shows 0% or 100%
+**Solutions:**
+1. Calibrate sensor in dry air (0%) and water (100%)
+2. Check wiring connections
+3. Replace if corroded
+
+### Problem: Uneven watering
+**Solutions:**
+1. Check drip line for clogs
+2. Ensure equal pressure in all lines
+3. Add pressure regulator (~฿100)
+
+---
+
+## Recommended Products (Thailand)
+
+### Sensors:
+- **Shopee**: "Capacitive Soil Moisture Sensor v1.2"
+- **Lazada**: "HC-SR04 Ultrasonic Sensor"
+
+### Pumps:
+- **HomePro**: Submersible pumps 12V
+- **Baan & Beyond**: Drip irrigation kits
+
+### Tanks:
+- **Thai Watsadu**: Plastic water tanks 200-1000L
+
+---
+
+## Need Help?
+
+Questions about water management for your farm?
+
+<LineContactButton lineOaId="@smartfarm" message="สวัสดีครับ ต้องการสอบถามเกี่ยวกับระบบจัดการน้ำ Smart Farm" />
+
+---
+
+**Last Updated**: 2025-12-29  
+**Difficulty**: Beginner to Intermediate  
+**Estimated Cost**: ฿1,100-2,000 for basic setup
