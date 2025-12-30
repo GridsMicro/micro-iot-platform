@@ -381,42 +381,43 @@ export default function DashboardPage() {
                             </CardContent>
                         </Card>
                     </div>
-
-                    {/* System Activity Logs */}
-                    <Card className="lg:col-span-3">
-                        <CardHeader className="flex flex-row items-center justify-between">
-                            <CardTitle className="flex items-center gap-3">
-                                <AlertCircle className="w-5 h-5 text-[var(--accent-primary)]" />
-                                {t('activityAlerts')}
-                            </CardTitle>
-                            <span className="px-3 py-1 rounded-full bg-white/5 text-[10px] font-black uppercase tracking-widest text-slate-500">{t('last24h')}</span>
-                        </CardHeader>
-                        <CardContent className="p-0">
-                            <div className="divide-y divide-white/5">
-                                <LogItem
-                                    time="10:45 AM"
-                                    type="Auto"
-                                    message={language === 'th' ? "เริ่มรดน้ำ: ความชื้นดิน (28%) ต่ำกว่าเกณฑ์ (30%)" : "Irrigation started: Soil moisture (28%) below threshold (30%)"}
-                                    status="success"
-                                />
-                                <LogItem
-                                    time="09:12 AM"
-                                    type="System"
-                                    message={language === 'th' ? "อุปกรณ์ PWR-003 สลับไปใช้ Local Hub เนื่องอินเทอร์เน็ตไม่เสถียร" : "Device PWR-003 switched to Local Hub due to internet instability"}
-                                    status="warning"
-                                />
-                                <LogItem
-                                    time="08:00 AM"
-                                    type="Manual"
-                                    message={language === 'th' ? "ผู้ใช้ 'Pro Farmer' อัปเดตแผนการปลูกเป็น 'Vertical Garden v2'" : "User 'Pro Farmer' updated growth plan to 'Vertical Garden v2'"}
-                                    status="info"
-                                />
-                            </div>
-                        </CardContent>
-                    </Card>
                 </div>
+
+                {/* System Activity Logs - Full Width Below */}
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between">
+                        <CardTitle className="flex items-center gap-3">
+                            <AlertCircle className="w-5 h-5 text-[var(--accent-primary)]" />
+                            {t('activityAlerts')}
+                        </CardTitle>
+                        <span className="px-3 py-1 rounded-full bg-white/5 text-[10px] font-black uppercase tracking-widest text-slate-500">{t('last24h')}</span>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                        <div className="divide-y divide-white/5">
+                            <LogItem
+                                time="10:45 AM"
+                                type="Auto"
+                                message={language === 'th' ? "เริ่มรดน้ำ: ความชื้นดิน (28%) ต่ำกว่าเกณฑ์ (30%)" : "Irrigation started: Soil moisture (28%) below threshold (30%)"}
+                                status="success"
+                            />
+                            <LogItem
+                                time="09:12 AM"
+                                type="System"
+                                message={language === 'th' ? "อุปกรณ์ PWR-003 เชื่อมต่อกับ Local Hub เรียบร้อยแล้ว" : "Device PWR-003 connected to Local Hub successfully"}
+                                status="info"
+                            />
+                            <LogItem
+                                time="04:08 AM"
+                                type="Manual"
+                                message={language === 'th' ? "ผู้ใช้ 'Pro Farmer' อนุมัติแผนเพาะปลูก 'Vertical Garden v2'" : "User 'Pro Farmer' approved planting plan 'Vertical Garden v2'"}
+                                status="info"
+                            />
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
-        </DashboardShell>
+        </div>
+        </DashboardShell >
     );
 }
 
