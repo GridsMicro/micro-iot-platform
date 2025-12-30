@@ -36,6 +36,12 @@ export function getAllPostIds() {
 
 export async function getPostData(id: string) {
     const fullPath = path.join(contentDirectory, `${id}.mdx`);
+
+    // Check if file exists to prevent errors
+    if (!fs.existsSync(fullPath)) {
+        throw new Error(`Post not found: ${id}`);
+    }
+
     const fileContents = fs.readFileSync(fullPath, 'utf8');
     const matterResult = matter(fileContents);
 
