@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import DashboardShell from '@/components/dashboard/DashboardShell';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
-import { Activity, Heart, Thermometer, Zap, Brain, User, Navigation } from 'lucide-react';
+import { Activity, Heart, Thermometer, Zap, Brain, User, Navigation, AlertTriangle } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
