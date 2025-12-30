@@ -343,7 +343,7 @@ function HealthCard({ title, value, unit, icon: Icon, color, status, trend }: an
                     <span className="text-sm font-bold text-slate-500 uppercase tracking-tighter">{unit}</span>
                 </div>
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                    <div className="w-4 h-[2px] bg-[var(--accent-primary)]" />
+                    <span className="w-4 h-[2px] bg-[var(--accent-primary)] block" />
                     {title}
                 </p>
             </CardContent>
